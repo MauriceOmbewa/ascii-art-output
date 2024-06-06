@@ -9,15 +9,13 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 || len(os.Args) > 4 {
-		fmt.Println("Error: Incorrect number of arguments ", len(os.Args))
+	if len(os.Args) != 4 {
+		fmt.Println("Usage: go run . [OPTION] [STRING] [BANNER]")
+		fmt.Println("Example: go run . --output=<fileName.txt> something standard")
 		return
 	}
 	// Get an input text from the commandline.
-	inputtext := os.Args[1]
-	if len(os.Args) == 4{
-		inputtext = os.Args[2]
-	}
+	inputtext := os.Args[2]
 
 	// Check if there are any args in the commandline and if the input is also empty.
 	if inputtext == "" {
@@ -44,19 +42,11 @@ func main() {
 	// Split our input text to a string slice and separate with a newline.
 	words := strings.Split(inputtext, "\n")
 
-	//setting the default bannerfile to standard.txt
-	bann := "standard.txt"
+	//setting the bannerfile to be used according to user input
+	banner := os.Args[3]
+	bannlow := strings.ToLower(banner)
+	bann := bannlow + ".txt"//outputfile.WriteString("\n")
 
-	//changing the bannerfile to be used according to user input
-	if len(os.Args) == 4 {
-		banner := os.Args[3]
-		bannlow := strings.ToLower(banner)
-		bann = bannlow + ".txt"//outputfile.WriteString("\n")
-	} else if len(os.Args) == 3 {
-		banner := os.Args[2]
-		bannlow := strings.ToLower(banner)
-		bann = bannlow + ".txt"//outputfile.WriteString("\n")
-	}
 
 	// Read content from one of the banner files.
 	contents, err := os.ReadFile(bann)
@@ -78,8 +68,12 @@ func main() {
 		contents2 := strings.Split(string(contents), "\n")
 
 		outputfilename := os.Args[1]
-		if len(os.Args) == 2 || len(os.Args) == 3 {
-			outputfilename = "result.txt"
+		if strings.HasPrefix(outputfilename, "--output="){
+			outputfilename = outputfilename[9:]
+		} else {
+			fmt.Println("Usage: go run . [OPTION] [STRING] [BANNER]")
+			fmt.Println("EX: go run . --output=<fileName.txt> something standard")
+			return
 		}
 		ascii.AsciiArt(words, contents2, outputfilename)
 	} else {
